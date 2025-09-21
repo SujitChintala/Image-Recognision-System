@@ -1,1 +1,3 @@
-# End-To-End Machine Learning Project
+# Machine Learning Project
+
+## In this project, I'll be building an end-to-end Machine Learning Project.
