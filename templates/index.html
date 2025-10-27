@@ -90,16 +90,15 @@
         }
         
         .result-item {
-            padding: 1rem;
-            border: 1px solid #e5e7eb;
-            border-radius: 0.5rem;
-            margin-bottom: 0.75rem;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #f3f4f6;
             transition: all 0.2s;
         }
         
         .result-item:hover {
-            border-color: #18181b;
-            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            background: #f9fafb;
+            padding-left: 0.5rem;
+            padding-right: 0.5rem;
         }
         
         .spinner {
@@ -119,68 +118,88 @@
     </style>
 </head>
 <body class="bg-gray-50">
-    <div class="container mx-auto px-4 py-8 max-w-4xl">
+    <div class="container mx-auto px-4 py-8 max-w-7xl">
         <!-- Header -->
         <div class="text-center mb-8">
-            <h1 class="text-4xl font-bold text-gray-900 mb-2">Image Recognition</h1>
-            <p class="text-gray-600">Powered by AlexNet & PyTorch</p>
+            <h1 class="text-4xl font-bold text-gray-900 mb-2">ImageAI</h1>
+            <p class="text-gray-600">Powered by AlexNet • Deep Learning</p>
         </div>
 
-        <!-- Main Card -->
-        <div class="card p-6 mb-6">
-            <!-- Upload Area -->
-            <div id="uploadArea" class="file-upload-area mb-6">
-                <input type="file" id="fileInput" class="input-file" accept="image/*">
-                <svg class="mx-auto h-12 w-12 text-gray-400 mb-4" stroke="currentColor" fill="none" viewBox="0 0 48 48">
-                    <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                </svg>
-                <p class="text-gray-700 font-medium mb-2">Click to upload or drag and drop</p>
-                <p class="text-gray-500 text-sm">PNG, JPG, JPEG, GIF or BMP (MAX. 16MB)</p>
-            </div>
+        <!-- Two Column Layout -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- Left Card - Upload -->
+            <div class="card p-6">
+                <h2 class="text-xl font-bold text-gray-900 mb-2">Upload Image</h2>
+                <p class="text-gray-500 text-sm mb-6">Drop your image here or click to browse</p>
 
-            <!-- Preview -->
-            <div id="previewSection" class="hidden mb-6">
-                <p class="text-sm font-medium text-gray-700 mb-2">Selected Image:</p>
-                <div class="relative">
-                    <img id="imagePreview" class="max-w-full h-auto rounded-lg border border-gray-200" alt="Preview">
-                    <button id="removeImage" class="absolute top-2 right-2 bg-red-500 text-white rounded-full p-2 hover:bg-red-600">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                        </svg>
+                <!-- Upload Area -->
+                <div id="uploadArea" class="file-upload-area mb-6">
+                    <input type="file" id="fileInput" class="input-file" accept="image/*">
+                    <svg class="mx-auto h-12 w-12 text-gray-400 mb-4" stroke="currentColor" fill="none" viewBox="0 0 48 48">
+                        <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                    <p class="text-gray-700 font-medium mb-2">Click to upload or drag and drop</p>
+                    <p class="text-gray-500 text-sm">PNG, JPG, JPEG, GIF or BMP (MAX. 16MB)</p>
+                </div>
+
+                <!-- Preview -->
+                <div id="previewSection" class="hidden mb-6">
+                    <div class="relative">
+                        <img id="imagePreview" class="max-w-full h-auto rounded-lg border border-gray-200" alt="Preview">
+                        <button id="removeImage" class="absolute top-2 right-2 bg-red-500 text-white rounded-full p-2 hover:bg-red-600">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Buttons -->
+                <div class="flex gap-3">
+                    <button id="changeImageBtn" class="flex-1 px-4 py-2 border border-gray-300 rounded-lg font-medium text-gray-700 hover:bg-gray-50 hidden">
+                        🔄 Change Image
+                    </button>
+                    <button id="predictBtn" class="flex-1 btn-primary hidden" disabled>
+                        ⚡ Analyze Image
                     </button>
                 </div>
-            </div>
 
-            <!-- Predict Button -->
-            <button id="predictBtn" class="btn-primary w-full hidden" disabled>
-                Predict Image
-            </button>
-
-            <!-- Loading -->
-            <div id="loading" class="hidden">
-                <div class="spinner"></div>
-                <p class="text-center text-gray-600 mt-4">Analyzing image...</p>
-            </div>
-        </div>
-
-        <!-- Results Card -->
-        <div id="resultsCard" class="card p-6 hidden">
-            <h2 class="text-2xl font-bold text-gray-900 mb-4">Predictions</h2>
-            
-            <!-- Top Prediction -->
-            <div id="topPrediction" class="mb-6 p-4 bg-gray-50 rounded-lg border-2 border-gray-200">
-                <p class="text-sm text-gray-600 mb-1">Best Match</p>
-                <div class="flex justify-between items-center">
-                    <p class="text-xl font-bold text-gray-900" id="topClass"></p>
-                    <span class="badge badge-success" id="topConfidence"></span>
+                <!-- Loading -->
+                <div id="loading" class="hidden mt-6">
+                    <div class="spinner"></div>
+                    <p class="text-center text-gray-600 mt-4">Analyzing image...</p>
                 </div>
             </div>
 
-            <!-- All Predictions -->
-            <div>
-                <p class="text-sm font-medium text-gray-700 mb-3">Top 5 Predictions:</p>
-                <div id="predictionsList"></div>
+            <!-- Right Card - Results -->
+            <div id="resultsCard" class="card p-6 opacity-50">
+                <h2 class="text-xl font-bold text-gray-900 mb-2">Recognition Results</h2>
+                <p class="text-gray-500 text-sm mb-6">AI-powered predictions with confidence scores</p>
+                
+                <!-- Top Prediction -->
+                <div id="topPrediction" class="mb-6 p-4 bg-gradient-to-r from-gray-800 to-gray-900 rounded-lg text-white">
+                    <p class="text-xs text-gray-300 mb-2 uppercase tracking-wide">TOP MATCH</p>
+                    <p class="text-2xl font-bold mb-3" id="topClass">Upload an image to analyze</p>
+                    <div class="progress-bar bg-gray-700">
+                        <div class="progress-fill bg-green-400" style="width: 0%" id="topProgressBar"></div>
+                    </div>
+                    <p class="text-right text-sm mt-2 font-semibold" id="topConfidence">0%</p>
+                </div>
+
+                <!-- All Predictions -->
+                <div>
+                    <p class="text-sm font-semibold text-gray-900 mb-3">Other Predictions</p>
+                    <div id="predictionsList" class="space-y-3">
+                        <div class="text-gray-400 text-sm">No predictions yet</div>
+                    </div>
+                </div>
             </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="text-center mt-8 text-gray-500 text-sm">
+            <p>Built using PyTorch & AlexNet</p>
+            <p class="mt-1">Trained on ImageNet • 1000+ object categories</p>
         </div>
     </div>
 
@@ -190,6 +209,7 @@
         const previewSection = document.getElementById('previewSection');
         const imagePreview = document.getElementById('imagePreview');
         const predictBtn = document.getElementById('predictBtn');
+        const changeImageBtn = document.getElementById('changeImageBtn');
         const loading = document.getElementById('loading');
         const resultsCard = document.getElementById('resultsCard');
         const removeImageBtn = document.getElementById('removeImage');
@@ -198,6 +218,7 @@
 
         // Click to upload
         uploadArea.addEventListener('click', () => fileInput.click());
+        changeImageBtn.addEventListener('click', () => fileInput.click());
 
         // File selection
         fileInput.addEventListener('change', (e) => {
@@ -233,10 +254,19 @@
             const reader = new FileReader();
             reader.onload = (e) => {
                 imagePreview.src = e.target.result;
+                uploadArea.classList.add('hidden');
                 previewSection.classList.remove('hidden');
                 predictBtn.classList.remove('hidden');
+                changeImageBtn.classList.remove('hidden');
                 predictBtn.disabled = false;
-                resultsCard.classList.add('hidden');
+                
+                // Reset results
+                resultsCard.classList.add('opacity-50');
+                resultsCard.classList.remove('opacity-100');
+                document.getElementById('topClass').textContent = 'Upload an image to analyze';
+                document.getElementById('topConfidence').textContent = '0%';
+                document.getElementById('topProgressBar').style.width = '0%';
+                document.getElementById('predictionsList').innerHTML = '<div class="text-gray-400 text-sm">No predictions yet</div>';
             };
             reader.readAsDataURL(file);
         }
@@ -246,9 +276,16 @@
             e.stopPropagation();
             selectedFile = null;
             fileInput.value = '';
+            uploadArea.classList.remove('hidden');
             previewSection.classList.add('hidden');
             predictBtn.classList.add('hidden');
-            resultsCard.classList.add('hidden');
+            changeImageBtn.classList.add('hidden');
+            resultsCard.classList.add('opacity-50');
+            resultsCard.classList.remove('opacity-100');
+            document.getElementById('topClass').textContent = 'Upload an image to analyze';
+            document.getElementById('topConfidence').textContent = '0%';
+            document.getElementById('topProgressBar').style.width = '0%';
+            document.getElementById('predictionsList').innerHTML = '<div class="text-gray-400 text-sm">No predictions yet</div>';
         });
 
         // Predict
@@ -257,7 +294,6 @@
 
             predictBtn.disabled = true;
             loading.classList.remove('hidden');
-            resultsCard.classList.add('hidden');
 
             const formData = new FormData();
             formData.append('file', selectedFile);
@@ -287,25 +323,25 @@
         function displayResults(data) {
             const { top_prediction, predictions } = data;
 
+            // Enable results card
+            resultsCard.classList.remove('opacity-50');
+            resultsCard.classList.add('opacity-100');
+
             // Top prediction
             document.getElementById('topClass').textContent = top_prediction.class;
             document.getElementById('topConfidence').textContent = top_prediction.confidence + '%';
+            document.getElementById('topProgressBar').style.width = top_prediction.confidence + '%';
 
-            // All predictions
+            // Other predictions (skip first one)
             const predictionsList = document.getElementById('predictionsList');
-            predictionsList.innerHTML = predictions.map((pred, index) => `
+            predictionsList.innerHTML = predictions.slice(1).map((pred, index) => `
                 <div class="result-item">
-                    <div class="flex justify-between items-center mb-2">
-                        <span class="font-medium text-gray-900">${index + 1}. ${pred.class}</span>
-                        <span class="text-sm font-semibold text-gray-700">${pred.confidence}%</span>
-                    </div>
-                    <div class="progress-bar">
-                        <div class="progress-fill" style="width: ${pred.confidence}%"></div>
+                    <div class="flex justify-between items-center text-sm">
+                        <span class="text-gray-700">${index + 2}. ${pred.class}</span>
+                        <span class="font-semibold text-gray-900">${pred.confidence}%</span>
                     </div>
                 </div>
             `).join('');
-
-            resultsCard.classList.remove('hidden');
         }
     </script>
 </body>
