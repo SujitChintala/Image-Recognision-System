@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Recognition - AlexNet</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 0.5rem;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
+        }
+        
+        .btn-primary {
+            background: #18181b;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        
+        .btn-primary:hover {
+            background: #27272a;
+        }
+        
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .input-file {
+            display: none;
+        }
+        
+        .file-upload-area {
+            border: 2px dashed #d1d5db;
+            border-radius: 0.5rem;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .file-upload-area:hover {
+            border-color: #18181b;
+            background: #f9fafb;
+        }
+        
+        .file-upload-area.drag-over {
+            border-color: #18181b;
+            background: #f3f4f6;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+        
+        .badge-success {
+            background: #dcfce7;
+            color: #166534;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 0.5rem;
+            background: #e5e7eb;
+            border-radius: 9999px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: #18181b;
+            transition: width 0.3s ease;
+        }
+        
+        .result-item {
+            padding: 1rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            margin-bottom: 0.75rem;
+            transition: all 0.2s;
+        }
+        
+        .result-item:hover {
+            border-color: #18181b;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+        }
+        
+        .spinner {
+            border: 3px solid #f3f4f6;
+            border-top: 3px solid #18181b;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="container mx-auto px-4 py-8 max-w-4xl">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-gray-900 mb-2">Image Recognition</h1>
+            <p class="text-gray-600">Powered by AlexNet & PyTorch</p>
+        </div>
+
+        <!-- Main Card -->
+        <div class="card p-6 mb-6">
+            <!-- Upload Area -->
+            <div id="uploadArea" class="file-upload-area mb-6">
+                <input type="file" id="fileInput" class="input-file" accept="image/*">
+                <svg class="mx-auto h-12 w-12 text-gray-400 mb-4" stroke="currentColor" fill="none" viewBox="0 0 48 48">
+                    <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+                <p class="text-gray-700 font-medium mb-2">Click to upload or drag and drop</p>
+                <p class="text-gray-500 text-sm">PNG, JPG, JPEG, GIF or BMP (MAX. 16MB)</p>
+            </div>
+
+            <!-- Preview -->
+            <div id="previewSection" class="hidden mb-6">
+                <p class="text-sm font-medium text-gray-700 mb-2">Selected Image:</p>
+                <div class="relative">
+                    <img id="imagePreview" class="max-w-full h-auto rounded-lg border border-gray-200" alt="Preview">
+                    <button id="removeImage" class="absolute top-2 right-2 bg-red-500 text-white rounded-full p-2 hover:bg-red-600">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Predict Button -->
+            <button id="predictBtn" class="btn-primary w-full hidden" disabled>
+                Predict Image
+            </button>
+
+            <!-- Loading -->
+            <div id="loading" class="hidden">
+                <div class="spinner"></div>
+                <p class="text-center text-gray-600 mt-4">Analyzing image...</p>
+            </div>
+        </div>
+
+        <!-- Results Card -->
+        <div id="resultsCard" class="card p-6 hidden">
+            <h2 class="text-2xl font-bold text-gray-900 mb-4">Predictions</h2>
+            
+            <!-- Top Prediction -->
+            <div id="topPrediction" class="mb-6 p-4 bg-gray-50 rounded-lg border-2 border-gray-200">
+                <p class="text-sm text-gray-600 mb-1">Best Match</p>
+                <div class="flex justify-between items-center">
+                    <p class="text-xl font-bold text-gray-900" id="topClass"></p>
+                    <span class="badge badge-success" id="topConfidence"></span>
+                </div>
+            </div>
+
+            <!-- All Predictions -->
+            <div>
+                <p class="text-sm font-medium text-gray-700 mb-3">Top 5 Predictions:</p>
+                <div id="predictionsList"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const previewSection = document.getElementById('previewSection');
+        const imagePreview = document.getElementById('imagePreview');
+        const predictBtn = document.getElementById('predictBtn');
+        const loading = document.getElementById('loading');
+        const resultsCard = document.getElementById('resultsCard');
+        const removeImageBtn = document.getElementById('removeImage');
+
+        let selectedFile = null;
+
+        // Click to upload
+        uploadArea.addEventListener('click', () => fileInput.click());
+
+        // File selection
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) handleFile(file);
+        });
+
+        // Drag and drop
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('drag-over');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('drag-over');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('drag-over');
+            const file = e.dataTransfer.files[0];
+            if (file) handleFile(file);
+        });
+
+        // Handle file
+        function handleFile(file) {
+            if (!file.type.startsWith('image/')) {
+                alert('Please select an image file');
+                return;
+            }
+
+            selectedFile = file;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                imagePreview.src = e.target.result;
+                previewSection.classList.remove('hidden');
+                predictBtn.classList.remove('hidden');
+                predictBtn.disabled = false;
+                resultsCard.classList.add('hidden');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // Remove image
+        removeImageBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            selectedFile = null;
+            fileInput.value = '';
+            previewSection.classList.add('hidden');
+            predictBtn.classList.add('hidden');
+            resultsCard.classList.add('hidden');
+        });
+
+        // Predict
+        predictBtn.addEventListener('click', async () => {
+            if (!selectedFile) return;
+
+            predictBtn.disabled = true;
+            loading.classList.remove('hidden');
+            resultsCard.classList.add('hidden');
+
+            const formData = new FormData();
+            formData.append('file', selectedFile);
+
+            try {
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    displayResults(data);
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            } catch (error) {
+                alert('Error: ' + error.message);
+            } finally {
+                loading.classList.add('hidden');
+                predictBtn.disabled = false;
+            }
+        });
+
+        // Display results
+        function displayResults(data) {
+            const { top_prediction, predictions } = data;
+
+            // Top prediction
+            document.getElementById('topClass').textContent = top_prediction.class;
+            document.getElementById('topConfidence').textContent = top_prediction.confidence + '%';
+
+            // All predictions
+            const predictionsList = document.getElementById('predictionsList');
+            predictionsList.innerHTML = predictions.map((pred, index) => `
+                <div class="result-item">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="font-medium text-gray-900">${index + 1}. ${pred.class}</span>
+                        <span class="text-sm font-semibold text-gray-700">${pred.confidence}%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: ${pred.confidence}%"></div>
+                    </div>
+                </div>
+            `).join('');
+
+            resultsCard.classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
