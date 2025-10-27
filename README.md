@@ -1,4 +1,4 @@
-# Image Recognition with Machine Learning using PyTorch
+# Image Recognition with Deep Learning using PyTorch
 
 This project demonstrates image recognition using a pre-trained AlexNet model with PyTorch. It can classify images into 1,000 different categories from the ImageNet dataset.
 
