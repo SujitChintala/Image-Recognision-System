@@ -51,7 +51,7 @@ def predict():
         
         # Check if file type is allowed
         if not allowed_file(file.filename):
-            return jsonify({'error': 'Invalid file type. Allowed: png, jpg, jpeg, gif, bmp'}), 400
+            return jsonify({'error': 'Invalid file type. Allowed: png, jpg, jpeg, gif, bmp, webp'}), 400
         
         # Save the file
         filename = secure_filename(file.filename)
