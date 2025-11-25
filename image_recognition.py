@@ -3,7 +3,7 @@ Image Recognition with Machine Learning using PyTorch and AlexNet
 This script performs image recognition using a pre-trained AlexNet model.
 """
 
-#import torch
+import torch
 from torchvision import models, transforms
 from PIL import Image
 import json
