@@ -6,7 +6,7 @@ This script performs image recognition using a pre-trained AlexNet model.
 import torch
 from torchvision import models, transforms
 from PIL import Image
-import json
+#import json
 
 class ImageRecognition:
     def __init__(self, model_name='alexnet'):
