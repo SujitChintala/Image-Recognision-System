@@ -96,7 +96,6 @@ ipython_config.py
 
 # UV
 #   Similar to Pipfile.lock, it is generally recommended to include uv.lock in version control.
-#   
 
 # poetry
 #   Similar to Pipfile.lock, it is generally recommended to include poetry.lock in version control.
